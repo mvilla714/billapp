@@ -1,4 +1,5 @@
 import 'package:billapp/db/db_admin.dart';
+import 'package:billapp/pages/modals/register_modal.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -8,107 +9,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   showRegisterModal() {
-    showBottomSheet(
+    showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext ctx) {
         return Container(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-          height: 500,
-          color: Colors.white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Registra el gasto"),
-              SizedBox(
-                height: 16,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Selecciona el titulo",
-                  fillColor: Colors.black.withOpacity(0.19),
-                  contentPadding: EdgeInsets.all(16),
-                  filled: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.black.withOpacity(0.19),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Seleccione el tipo"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    DropdownButton(
-                      hint: Text("Seleccione"),
-                      items: [
-                        DropdownMenuItem(
-                          value: "kg",
-                          child: Text("Kg."),
-                        ),
-                        DropdownMenuItem(
-                          value: "lt",
-                          child: Text("Lt."),
-                        ),
-                        DropdownMenuItem(
-                          value: "lata",
-                          child: Text("Lata"),
-                        ),
-                      ],
-                      onChanged: (seleccionActual) {},
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Ingese monto",
-                  fillColor: Colors.black.withOpacity(0.19),
-                  contentPadding: EdgeInsets.all(16),
-                  filled: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Ingese fecha",
-                  fillColor: Colors.black.withOpacity(0.19),
-                  contentPadding: EdgeInsets.all(16),
-                  filled: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text("Cerrar"),
-              )
-            ],
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
+          // height: 200,
+          // color: Colors.white,
+          child: RegisterModal(),
         );
       },
     );
@@ -124,10 +36,24 @@ class _HomePageState extends State<HomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  DBAdmin dbAdmin = DBAdmin();
-                  dbAdmin.initDatabase();
-
                   showRegisterModal();
+                  //sin patron singleton, cada ve se crea una instancia de dbaadmin
+                  //DBAdmin dbAdmin = DBAdmin();
+                  //dbAdmin.checkDataBase();
+                  // dbAdmin.initDatabase();
+                  //dbAdmin.insertarGasto();
+                  //dbAdmin.obtenerGasto();
+
+                  //con patron singleton, solo una instancia y es global
+                  //DBAdmin().obtenerGasto();
+                  //parametro
+                  //DBAdmin().insertarGasto("Arroz", 3.5, "Kg.");
+                  //map
+                  /*DBAdmin().insertarGasto({
+                    "product": "Gaseosa",
+                    "price": 5.8,
+                    "type": "Lt.",
+                  });*/
                 },
                 child: Container(
                   height: 100,
