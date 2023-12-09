@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext ctx) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-          height: 200,
+          height: 500,
           color: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 16,
+                height: 8,
               ),
               Container(
                 decoration: BoxDecoration(
@@ -70,6 +70,42 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Ingese monto",
+                  fillColor: Colors.black.withOpacity(0.19),
+                  contentPadding: EdgeInsets.all(16),
+                  filled: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Ingese fecha",
+                  fillColor: Colors.black.withOpacity(0.19),
+                  contentPadding: EdgeInsets.all(16),
+                  filled: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("Cerrar"),
               )
             ],
           ),
