@@ -1,112 +1,166 @@
-import 'dart:ffi';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
+import 'package:billapp/models/bill_model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBAdmin {
-  Database? _myDataBse;
-//Patron singleton
-  static final DBAdmin _instance = DBAdmin._();
-  //constructor con nombre
-  DBAdmin._();
+  Database? _myDataBase;
 
+  //PATRÓN SINGLETON
+  static final DBAdmin _instance = DBAdmin._();
+  DBAdmin._();
   factory DBAdmin() {
     return _instance;
   }
 
-//fin patron
-
   Future<Database?> _checkDataBase() async {
-    //primera forma
-    /*if (myDataBse == null) {
-      myDataBse = await initDatabase();
-    } else {
-      return myDataBse;
+    //TERCERA FORMA
+    if (_myDataBase == null) {
+      print("LA BD ES NULA");
+      _myDataBase = await _initDatabase();
     }
-    return myDataBse;*/
-    // segunda forma
-    //myDataBse ??= initDatabase();
+    print("LA BD YA EXISTE");
+    return _myDataBase;
 
-    //tercera forma
-    if (_myDataBse == null) {
-      _myDataBse = await _initDatabase();
-    }
-    return _myDataBse;
+    // //PRIMERA FORMA
+    // //No ha sido creada
+    // if (myDataBase == null) {
+    //   myDataBase = await initDatabase();
+    // }
+    // //Si ha sido creada
+    // else {
+    //   return myDataBase;
+    // }
+    // return myDataBase;
+
+    //SEGUNDA FORMA
+    // myDataBase ??= await initDatabase();
   }
-  //checkDataBase() async {
-//    if
-  //}
 
   Future<Database> _initDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String pathDataBase = join(directory.path, "BuillsDB.db");
+    String pathDatabase = join(directory.path, "BillsDB.db");
+    print(pathDatabase);
     return await openDatabase(
-      pathDataBase,
+      pathDatabase,
       version: 1,
       onCreate: (Database db, int version) {
-        db.execute("""CREATE TABLE BILL( 
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          product TEXT,
-          price INT,
-          datetime TEXT,
-          type TEXT,
-          monto REAL,
-          cantidad REAL)""");
+        db.execute("""CREATE TABLE BILL(
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  product TEXT,
+                  price INT,
+                  datetime TEXT,
+                  type TEXT,
+                  monto REAL,
+                  cantidad REAL
+               )""");
       },
     );
   }
 
-  ///CRUD
-//Obtener gasto
-  obtenerGasto() async {
+  //CRUD
+  //OBTENER GASTOS
+  Future<List<Map>> obtenerGastos() async {
     Database? db = await _checkDataBase();
-    //forma 1
-    List data1 = await db!.query("BILL");
 
-    //forma 2
-    List data2 = await db!.query("BILL",
-        columns: [
-          "id",
-          "product",
-          "price",
-          "type",
-        ],
-        where: "type = 'Kg.'");
-//formar 3
-    List data3 = await db!.query("BILL", columns: [
-      "id",
-      "product",
-      "price",
-      "type",
-    ]);
-
-    //forma 4
-    List data4 = await db!.rawQuery(
-        "SELECT id, product, price,type FROM BILL WHERE type = 'Kg.'");
-    print(data3);
-  }
-
-//Insertar gasto
-  //insertarGasto(String product, double price, String type) async {
-  insertarGasto(Map<String, dynamic> data) async {
-    Database? db = await _checkDataBase();
-    int resp = await db!.insert(
-      "BILL",
-      /*{
-        "product": product,
-        "price": price,
-        "type": type,
-        
-      },*/
-      data,
+    //OBTENER TODA LA BD POR FUNCIÓN
+    List<Map<String, dynamic>> data = await db!.query(
+      'BILL',
+      columns: [
+        "id",
+        "product",
+        "price",
+        "type",
+      ],
     );
+    print(data);
 
-    print(resp);
+    return data;
+
+    //OBTENER DATA Y FILTRAR POR FUNCION
+    // List data = await db!.query(
+    //   "BILL",
+    //   columns: [
+    //     "id",
+    //     "product",
+    //     "price",
+    //     "type",
+    //   ],
+    //   where: "type='Kg.'",
+    // );
+
+    //OBTENER DATA Y FILTRAR POR SENTENCIA SQL
+    // List data = await db!
+    //     .rawQuery("SELECT id, product, price, type FROM BILL WHERE type='Kg.'");
   }
 
-//Actualizar gasto
-//Eliminar gasto
+  Future<List<BillModel>> getBills() async {
+    Database? db = await _checkDataBase();
+    List<Map<String, dynamic>> data = await db!.query(
+      'BILL',
+      columns: [
+        "id",
+        "product",
+        "price",
+        "type",
+      ],
+    );
+    List<BillModel> bills = data.map((e) => BillModel.fromJson(e)).toList();
+    return bills;
+  }
+
+  //INSERTAR GASTO
+  Future<int> insertarGasto(BillModel data) async {
+    Database? db = await _checkDataBase();
+    int res = await db!.insert(
+      "BILL",
+
+      data.toJson(),
+      // {
+      //   "product": data.product,
+      //   "type": data.type,
+      //   "price": data.price,
+      // },
+    );
+    print(res);
+    return res;
+  }
+
+  //ACTUALIZAR GASTO
+  /*Future<void> updBill(int id) async {
+    Database? db = await _checkDataBase();
+    await db!.update(
+        "BILL",
+        {
+          "product": "ACTUALIZADO",
+          "price": 19.9,
+        },
+        where: "id = $id");
+  }*/
+  Future<int> updBill(int? id, BillModel data) async {
+    Database? db = await _checkDataBase();
+    int res = await db!.update(
+      "BILL",
+      data.toJson(),
+      where: "id = $id",
+    );
+    print("update ${data.type}");
+    return res;
+  }
+
+  //ELIMINAR GASTO
+  Future<void> delBill(int id) async {
+    Database? db = await _checkDataBase();
+    await db!
+        .delete(
+      'BILL',
+      where: 'id = $id',
+    )
+        .then((value) {
+      print("------------------------");
+      print(value);
+    });
+  }
 }

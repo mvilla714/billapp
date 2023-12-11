@@ -1,5 +1,7 @@
 import 'package:billapp/db/db_admin.dart';
+import 'package:billapp/models/bill_model.dart';
 import 'package:billapp/pages/modals/register_modal.dart';
+import 'package:billapp/widgets/item_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -8,7 +10,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  showRegisterModal() {
+  List<Map> gastosList = [];
+  List<BillModel> gastosBill = [];
+  int action = 1;
+
+  showRegisterModal(int index) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -20,10 +26,38 @@ class _HomePageState extends State<HomePage> {
           ),
           // height: 200,
           // color: Colors.white,
-          child: RegisterModal(),
+          child: RegisterModal(
+            action: action,
+            gastoBill: gastosBill[index],
+          ),
         );
       },
-    );
+    ).then((value) {
+      getDataGeneralBillModel();
+    });
+  }
+
+  // Future<void> getDataGeneralMap() async {
+  //   gastosList = await DBAdmin().obtenerGastos();
+  //   print("RECUPERANDO LA BD Y ASIGNANDOLA EN NUESTRA LISTA");
+  //   print(gastosList);
+  //   setState(() {});
+  // }
+
+  Future<void> getDataGeneralBillModel() async {
+    gastosBill = await DBAdmin().getBills();
+    print("RECUPERANDO LA BD Y ASIGNANDOLA EN NUESTRA LISTA de BILLS MODEL");
+    print(gastosBill);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // getDataGeneralMap();
+    action = 1;
+    getDataGeneralBillModel();
   }
 
   @override
@@ -36,24 +70,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  showRegisterModal();
-                  //sin patron singleton, cada ve se crea una instancia de dbaadmin
-                  //DBAdmin dbAdmin = DBAdmin();
-                  //dbAdmin.checkDataBase();
-                  // dbAdmin.initDatabase();
-                  //dbAdmin.insertarGasto();
-                  //dbAdmin.obtenerGasto();
-
-                  //con patron singleton, solo una instancia y es global
-                  //DBAdmin().obtenerGasto();
-                  //parametro
-                  //DBAdmin().insertarGasto("Arroz", 3.5, "Kg.");
-                  //map
-                  /*DBAdmin().insertarGasto({
-                    "product": "Gaseosa",
-                    "price": 5.8,
-                    "type": "Lt.",
-                  });*/
+                  action = 1;
+                  showRegisterModal(0);
+                  // DBAdmin().obtenerGastos();
                 },
                 child: Container(
                   height: 100,
@@ -113,20 +132,35 @@ class _HomePageState extends State<HomePage> {
                           Divider(
                             height: 24,
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(16),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: gastosBill.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    // //ELIMINAR GASTO
+                                    // DBAdmin()
+                                    //     .delBill(gastosBill[index].id!)
+                                    //     .then((value) {
+                                    //   getDataGeneralBillModel();
+                                    // });
+
+                                    //ACTUALIZAR GASTO
+                                    //DBAdmin()
+                                    //    .updBill(gastosBill[index].id!)
+                                    //    .then((value) {
+                                    //  getDataGeneralBillModel();
+                                    //});
+                                    action = 2;
+                                    showRegisterModal(index);
+                                  },
+                                  child: ItemWidget(
+                                    billProduct: gastosBill[index],
+                                  ),
+                                );
+                              },
                             ),
-                            child: ListTile(
-                              leading: Icon(
-                                Icons.shopping_cart,
-                              ),
-                              title: Text("1 kg Huevos"),
-                              subtitle: Text("11/05/2023"),
-                              trailing: Text("S/ 15.0"),
-                            ),
-                          )
+                          ),
                         ],
                       ),
                     ),
