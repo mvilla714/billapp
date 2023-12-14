@@ -154,6 +154,13 @@ class _HomePageState extends State<HomePage> {
                                     action = 2;
                                     showRegisterModal(index);
                                   },
+                                  onDoubleTap: () {
+                                    DBAdmin()
+                                        .delBill(gastosBill[index].id!)
+                                        .then((value) {
+                                      getDataGeneralBillModel();
+                                    });
+                                  },
                                   child: ItemWidget(
                                     billProduct: gastosBill[index],
                                   ),
@@ -169,7 +176,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(
                 height: 70,
-              )
+              ),
             ],
           ),
         ],

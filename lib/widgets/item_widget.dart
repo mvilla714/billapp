@@ -17,6 +17,7 @@ class ItemWidget extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           Icons.shopping_cart,
+          size: 24.0,
         ),
         title: Text(billProduct.product),
         subtitle: Text(billProduct.type),
