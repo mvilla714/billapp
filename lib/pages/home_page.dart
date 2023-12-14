@@ -160,6 +160,14 @@ class _HomePageState extends State<HomePage> {
                                         .then((value) {
                                       getDataGeneralBillModel();
                                     });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.green,
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                            "Se elimino el registro correctamente"),
+                                      ),
+                                    );
                                   },
                                   child: ItemWidget(
                                     billProduct: gastosBill[index],
