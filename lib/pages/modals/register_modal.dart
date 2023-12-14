@@ -45,7 +45,9 @@ class _RegisterModalState extends State<RegisterModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("Registra el gasto"),
+          Text(widget.action == 1
+              ? "Registrar el gasto"
+              : "Actualizar el gasto"),
           SizedBox(
             height: 16,
           ),
